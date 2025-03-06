@@ -1,0 +1,15 @@
+---
+title: "misinformation analysis"
+author: "Yimin"
+date: "2025-03-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(readr)
+misinfo_d <- read_csv('../data/life-under-lockdown-wave2-extract (1).csv',
+                     show_col_types = FALSE)
+```
+
+
