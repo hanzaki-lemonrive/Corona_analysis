@@ -8,8 +8,143 @@ output: html_document
 ```{r setup, include=FALSE}
 library(dplyr)
 library(readr)
+library(ggplot2)
 misinfo_d <- read_csv('../data/life-under-lockdown-wave2-extract (1).csv',
                      show_col_types = FALSE)
+
+knowledge_levels <- c(
+  'Nothing at all',
+  'Not very much',
+  'A great deal',
+  'A fair amount'
+)
+misinfo_d <- misinfo_d %>%
+  mutate(
+    know_facebook = know_facebook %>%
+      ordered(
+        levels = knowledge_levels
+      )
+  )
+
+```
+
+# visualise
+```{r visualise-age}
+misinfo_d %>% 
+  ggplot(
+    aes(x = age)
+  )+
+  geom_histogram(binwidth = 5)
+
 ```
 
 
+```{r visualise- gender}
+misinfo_d %>%
+  ggplot(
+    aes(x = gender)
+  )+
+  geom_bar()
+```
+
+
+```{r visualise - know_facebook}
+misinfo_d %>%
+  ggplot(
+    aes(x = know_facebook)
+  )+
+  geom_bar()
+```
+
+```{r visualise_beliefs}
+misinfo_d %>%
+  ggplot(
+    aes(x = beliefs)
+  )+
+  geom_histogram(binwidth = 1)
+```
+
+
+# Analysis
+
+H1 We expect a relationship between Gender and number of misinformation beliefs
+
+```{r gender-beliefs-table}
+misinfo_d %>%
+  group_by(gender)%>%
+  summarise(
+    n = n(),
+    M = mean(beliefs),
+    Mdn = median(beliefs),
+    SD = sd(beliefs)
+  )
+```
+
+In the sample, men had more misinformation beliefs(M = .73, SD= 1.14)
+
+```{r gender-beliefs-test}
+misinfo_d %>%
+  filter(gender != 'In another way')%>%
+  t.test(
+    beliefs ~ gender,
+    data = .
+  )
+```
+
+
+# Hypotheses
+H1 We e
+
+H2 We expect a relationship between age and number of misinformation beliefs
+
+H3 We expect a relationship between relying on Facebook for knowledge 
+
+# descriptive analysis
+```{r age-beliefs analysis}
+misinfo_d %>%
+  ggplot(
+  aes(x = age, y = beliefs)
+)+
+  geom_jitter()
+  
+```
+
+```{r age-beliefs-correlation test}
+
+misinfo_d %>%
+  cor.test(
+    ~age + beliefs,
+    data = .,
+    method = 'pearson'
+  )
+```
+In the sample, there is a statistically significant moderate negative correlation between age and number of misinformation beliefs, r(498) = -.24, 95% CI [-.32,-.16] ,p < 0.001.
+
+
+# Fingdings
+```{r gender}
+```
+## number of misinformation beliefs reliance on Facebook for knowledge
+```{r facebook-beliefs statiscs}
+misinfo_d %>%
+  ggplot(
+    aes(x = know_facebook, y = beliefs)
+  )+
+  geom_boxplot()
+```
+
+```{r facebook-beliefs-correlation}
+misinfo_d %>%
+  mutate(
+    know_facebook = as.numeric(know_facebook)
+  ) %>%
+  
+  cor.test(
+    ~know_facebook +beliefs,
+    data = .,
+    method = 'spearman',
+    exact = FALSE
+  )
+```
+
+In the sample ,there is a statistically significant moderate positive correlation between relying on Facebook for knowledge about coronavirus and number of misinformation beliefs, rs(498)=.23, p<0.01
